@@ -23,6 +23,13 @@
 - photon
 - WebRTC
 
+### アーキテクチャ図
+
+### 各デプロイ先
+- Line
+- Flutter
+- Unity
+- React
 ### でも動画
 
 ### タスク管理
