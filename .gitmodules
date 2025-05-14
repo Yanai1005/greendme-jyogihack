@@ -1,3 +1,6 @@
 [submodule "front-react"]
 	path = front-react
 	url = https://github.com/Yanai1005/greendme-react
+[submodule "front-flutter"]
+	path = front-flutter
+	url = https://github.com/NazonoKansatugata/greedme_flutter
