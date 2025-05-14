@@ -1,0 +1,3 @@
+[submodule "front-react"]
+	path = front-react
+	url = https://github.com/Yanai1005/greendme-react
