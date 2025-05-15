@@ -7,3 +7,6 @@
 [submodule "front-unity"]
 	path = front-unity
 	url = https://github.com/Yanai1005/greendme-unity
+[submodule "line"]
+	path = line
+	url = https://github.com/NazonoKansatugata/greedme_line
