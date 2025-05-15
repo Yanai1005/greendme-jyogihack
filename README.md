@@ -12,9 +12,9 @@
 
 
 ### りぽじとり
-- Line
+- [Line](https://github.com/NazonoKansatugata/greedme_line)
 - [Flutter](https://github.com/NazonoKansatugata/greedme_flutter)
-- Unity
+- [Unity](https://github.com/Yanai1005/greendme-unity)
 - [React](https://github.com/Yanai1005/greendme-react)
 
 ### 使用技術
@@ -26,10 +26,10 @@
 ### アーキテクチャ図
 
 ### 各デプロイ先
-- Line
-- Flutter
+- [Line](https://lin.ee/cGzNKOc)
+- [Flutter](https://greendme-8e44c.web.app/)
 - Unity
-- React
+- [React](https://greendme-8e44c.web.app/)
 ### でも動画
 
 ### タスク管理
