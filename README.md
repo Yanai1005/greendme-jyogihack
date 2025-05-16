@@ -18,17 +18,17 @@
 - [React](https://github.com/Yanai1005/greendme-react)
 
 ### 使用技術
-起
-- Line Messaging API
-承
-- Flutter
-転
+**起**  
+- Line Messaging API  
+**承**  
+- Flutter  
+**転**
 - Unity
-- photon
-結
+- photon  
+**結**
 - React
-- WebRTC
-共通
+- WebRTC  
+**共通**  
 - firebase
 
 ### アーキテクチャ図
