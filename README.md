@@ -18,10 +18,18 @@
 - [React](https://github.com/Yanai1005/greendme-react)
 
 ### 使用技術
-- 縛りの４つ
-- firebase
+起
+- Line Messaging API
+承
+- Flutter
+転
+- Unity
 - photon
+結
+- React
 - WebRTC
+共通
+- firebase
 
 ### アーキテクチャ図
 
@@ -29,7 +37,7 @@
 - [Line](https://lin.ee/cGzNKOc)
 - [Flutter](https://greendme-8e44c.web.app/)
 - Unity
-- [React](https://greendme-8e44c.web.app/)
+- [React](https://greendme-react.web.app/)
 ### でも動画
 
 ### タスク管理
