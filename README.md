@@ -19,15 +19,19 @@
 
 ### 使用技術
 **起**  
-- Line Messaging API  
+- Line Messaging API
+
 **承**  
 - Flutter  
+
 **転**
 - Unity
 - photon  
+
 **結**
 - React
 - WebRTC  
+
 **共通**  
 - firebase
 
