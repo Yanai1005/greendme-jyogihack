@@ -1,0 +1,112 @@
+name: Daily Work Thread Creation
+
+on:
+  schedule:
+    - cron: '0 15 * * *'
+  workflow_dispatch:
+
+jobs:
+  create-and-close-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: リポジトリのチェックアウト
+        uses: actions/checkout@v4
+        
+      - name: 日付の確認と設定
+        id: date-check
+        run: |
+          # 今日の日付をYYYYMMDD形式で取得（比較用）
+          TODAY=$(date +'%Y%m%d')
+          
+          # 今日と昨日の日付をYYYY-MM-DD形式で取得（表示用）
+          TODAY_FORMATTED=$(date +'%Y-%m-%d')
+          YESTERDAY=$(date -d "@$(($(date +%s) - 86400))" +'%Y-%m-%d')
+          
+          # 日付を環境変数として出力
+          echo "today=$TODAY_FORMATTED" >> $GITHUB_ENV
+          echo "yesterday=$YESTERDAY" >> $GITHUB_ENV
+          echo "today_numeric=$TODAY" >> $GITHUB_ENV
+
+      - name: 作業スレッドの作成と管理
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            const today = process.env.today;
+            const yesterday = process.env.yesterday;
+            const todayNumeric = process.env.today_numeric;
+            
+            const endDate = '2025-05-25';
+            const titleTemplate = '作業スレッド: $DATE';
+            
+            const endDateNumeric = endDate.replace(/-/g, '');
+            
+            if (parseInt(todayNumeric) > parseInt(endDateNumeric)) {
+              console.log(`ワークフロー停止: 現在の日付 (${today}) は終了日 (${endDate}) 以降です`);
+              return;
+            }
+            
+            let issueBody = '';
+            try {
+              const templatePath = path.join('.github', 'ISSUE_TEMPLATE.md');
+              
+              if (fs.existsSync(templatePath)) {
+                // テンプレートを読み込む
+                issueBody = fs.readFileSync(templatePath, 'utf8');
+                
+                // $DATEプレースホルダーを今日の日付で置換
+                issueBody = issueBody.replace(/\$DATE/g, today);
+                
+                console.log('Issue テンプレートを正常に読み込みました');
+              } else {
+                // テンプレートが見つからない場合はデフォルトの本文を使用
+                const bodyTemplate = '${{ vars.WORK_THREAD_BODY }}' || '$DATE の作業スレッドです。作業項目をこちらに追加してください。';
+                issueBody = bodyTemplate.replace(/\$DATE/g, today);
+                
+                console.log('Issue テンプレートが見つかりませんでした。デフォルトの本文を使用します。');
+              }
+            } catch (error) {
+              console.log(`テンプレート読み込み中にエラーが発生しました: ${error.message}`);
+              // エラー発生時はデフォルトの本文を使用
+              const bodyTemplate = '${{ vars.WORK_THREAD_BODY }}' || '$DATE の作業スレッドです。作業項目をこちらに追加してください。';
+              issueBody = bodyTemplate.replace(/\$DATE/g, today);
+            }
+            
+            const todayTitle = titleTemplate.replace(/\$DATE/g, today);
+            
+            const newIssue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: todayTitle,
+              body: issueBody,
+              labels: ['daily-work-thread']
+            });
+            
+            console.log(`Issue #${newIssue.data.number} を作成しました`);
+            
+            const yesterdayTitle = titleTemplate.replace(/\$DATE/g, yesterday);
+            
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              sort: 'created',
+              direction: 'desc'
+            });
+            
+            const yesterdayIssue = issues.data.find(issue => issue.title === yesterdayTitle);
+            
+            if (yesterdayIssue) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: yesterdayIssue.number,
+                state: 'closed'
+              });
+              console.log(`Issue #${yesterdayIssue.number} をクローズしました`);
+            } else {
+              console.log(`タイトル "${yesterdayTitle}" のIssueが見つかりませんでした`);
+            }
