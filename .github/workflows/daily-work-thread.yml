@@ -2,7 +2,7 @@ name: Daily Work Thread Creation
 
 on:
   schedule:
-    - cron: '0 15 * * *'  # 00:00 JST
+    - cron: '0 15 * * *'
   workflow_dispatch:
 
 permissions:
@@ -19,13 +19,18 @@ jobs:
       - name: Set date variables
         id: date-check
         run: |
-          TODAY=$(date +'%Y%m%d')
-          TODAY_FORMATTED=$(date +'%Y-%m-%d')
-          YESTERDAY=$(date -d "@$(($(date +%s) - 86400))" +'%Y-%m-%d')
+          # タイムゾーンを東京に設定して日本時間の日付を取得
+          TODAY=$(TZ=Asia/Tokyo date +'%Y%m%d')
+          TODAY_FORMATTED=$(TZ=Asia/Tokyo date +'%Y-%m-%d')
+          YESTERDAY=$(TZ=Asia/Tokyo date -d "@$(($(TZ=Asia/Tokyo date +%s) - 86400))" +'%Y-%m-%d')
           
           echo "today=$TODAY_FORMATTED" >> $GITHUB_ENV
           echo "yesterday=$YESTERDAY" >> $GITHUB_ENV
           echo "today_numeric=$TODAY" >> $GITHUB_ENV
+          
+          # デバッグ出力
+          echo "日本時間の今日: $TODAY_FORMATTED"
+          echo "日本時間の昨日: $YESTERDAY"
 
       - name: Create and manage work threads
         uses: actions/github-script@v6
@@ -39,16 +44,28 @@ jobs:
             const yesterday = process.env.yesterday;
             const todayNumeric = process.env.today_numeric;
             
-            const endDate =  '2025-05-24';
-            const titleTemplate =  '作業すれ: $DATE';
+            // デバッグ情報を出力
+            console.log('==== デバッグ情報 ====');
+            console.log('Today:', today);
+            console.log('Yesterday:', yesterday);
+            console.log('Today Numeric:', todayNumeric);
+            
+            const endDate = '2025-05-24';
+            const titleTemplate = '作業すれ: $DATE';
             
             const endDateNumeric = endDate.replace(/-/g, '');
             
+            // 終了日チェック
             if (parseInt(todayNumeric) > parseInt(endDateNumeric)) {
               console.log(`Workflow stopped: Current date (${today}) is after end date (${endDate})`);
               return;
             }
             
+            // 今日のIssueタイトルとテンプレート
+            const todayTitle = titleTemplate.replace(/\$DATE/g, today);
+            console.log('Creating issue with title:', todayTitle);
+            
+            // Issueテンプレート処理
             let issueBody = '';
             try {
               const templatePath = path.join('.github', 'ISSUE_TEMPLATE.md');
@@ -61,12 +78,12 @@ jobs:
                 issueBody = bodyTemplate.replace(/\$DATE/g, today);
               }
             } catch (error) {
+              console.log('Error reading template:', error.message);
               const bodyTemplate = '${{ vars.WORK_THREAD_BODY }}' || '$DATE work thread. Add your tasks here.';
               issueBody = bodyTemplate.replace(/\$DATE/g, today);
             }
             
-            const todayTitle = titleTemplate.replace(/\$DATE/g, today);
-            
+            // 今日のIssue作成
             const newIssue = await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -75,8 +92,13 @@ jobs:
               labels: ['daily-work-thread']
             });
             
-            const yesterdayTitle = titleTemplate.replace(/\$DATE/g, yesterday);
+            console.log(`Created today's issue #${newIssue.data.number}`);
             
+            // 昨日のIssueタイトル
+            const yesterdayTitle = titleTemplate.replace(/\$DATE/g, yesterday);
+            console.log('Looking for yesterday issue with title:', yesterdayTitle);
+            
+            // オープン中のIssueを取得
             const issues = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -85,13 +107,25 @@ jobs:
               direction: 'desc'
             });
             
-            const yesterdayIssue = issues.data.find(issue => issue.title === yesterdayTitle);
+            console.log(`Found ${issues.data.length} open issues`);
             
+            // 昨日のIssueを探す（より柔軟な検索）
+            const yesterdayIssue = issues.data.find(issue => {
+              console.log(`Checking issue: ${issue.title}`);
+              return issue.title === yesterdayTitle || 
+                    (issue.title.includes(yesterday) && issue.title.includes('作業すれ'));
+            });
+            
+            // 昨日のIssueを閉じる
             if (yesterdayIssue) {
+              console.log(`Found yesterday's issue: #${yesterdayIssue.number}`);
               await github.rest.issues.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: yesterdayIssue.number,
                 state: 'closed'
               });
+              console.log(`Successfully closed issue #${yesterdayIssue.number}`);
+            } else {
+              console.log('No yesterday issue found to close');
             }
