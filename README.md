@@ -36,7 +36,6 @@
 - firebase
 
 
-
 ### アーキテクチャ図
 
 ### 各デプロイ先
@@ -45,16 +44,17 @@
 - [Unity](https://unity-greendme.web.app/)
 - [React](https://greendme-react.web.app/)
 
-### ストーリー
-- [Line] リポジトリを作る
-- [Flutter]コードを書いてコミットする
-- [Unity]conflictが起きたので言い争い
-- [React]やっと直せたがforse pushされてしまう
+
 ### でも動画
 
 ### タスク管理
 
 ### ストーリー
+- [Line] リポジトリを作る
+- [Flutter]コードを書いてコミットする
+- [Unity]conflictが起きたので言い争い
+- [React]やっと直せたがforse pushされてしまう
+
 ### スケジュール
 5/10 アイディアソン   
 ↓ この間は事前開発期間   
