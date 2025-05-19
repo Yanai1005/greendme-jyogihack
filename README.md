@@ -35,6 +35,8 @@
 **共通**  
 - firebase
 
+
+
 ### アーキテクチャ図
 
 ### 各デプロイ先
@@ -42,6 +44,12 @@
 - [Flutter](https://greendme-8e44c.web.app/)
 - [Unity](https://unity-greendme.web.app/)
 - [React](https://greendme-react.web.app/)
+
+### ストーリー
+- [Line] リポジトリを作る
+- [Flutter]コードを書いてコミットする
+- [Unity]conflictが起きたので言い争い
+- [React]やっと直せたがforse pushされてしまう
 ### でも動画
 
 ### タスク管理
