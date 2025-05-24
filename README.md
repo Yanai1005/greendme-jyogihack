@@ -4,11 +4,13 @@
 > どちらのコミットが修正されるのか、対戦相手と競い合います
 
 **推しアイデア**
+- web socketを使って、スマホをコントローラー,パソコンをゲーム画面にする
 
 **作った背景**
-
-
+- 技術縛り(line・flutter・unity・reactをすべて使う)を達成しつつ、コンフリクトが起こる過程をゲームで表しました。
 **推し技術**
+- web socketでflutterとnext.jsを繋いで遊ぶ
+- 画像認識で首の角度でunityを動かす
 
 
 ### りぽじとり
@@ -27,6 +29,8 @@
 - Node.js
 - web socket
 - next.js
+- vercel
+- render
 
 **転**
 - Unity
